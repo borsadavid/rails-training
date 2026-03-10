@@ -51,6 +51,19 @@ docker compose exec web bash
 
 ---
 
+## Git
+
+```bash
+git pull                        # get latest changes
+git checkout -b my-branch       # create & switch to new branch
+git checkout my-branch          # switch to existing branch
+git add .                       # stage all changes
+git commit -m "your message"    # commit
+git push origin my-branch       # push to remote
+```
+
+---
+
 ## Common Workflows
 
 **New gem** → add to `Gemfile`, then:
