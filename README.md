@@ -16,7 +16,7 @@ rm -rf my-folder  # delete folder (no undo!)
 sudo chown -R $USER:$USER .
 ```
 
----
+--- 
 
 ## Docker
 
@@ -47,6 +47,7 @@ Need a shell inside the container?
 ```bash
 docker compose exec web bash
 # now run rails commands directly, exit when done
+# intram in container sa rulam comenzi rails
 ```
 
 ---
