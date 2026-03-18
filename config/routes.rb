@@ -9,10 +9,18 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
-  resources :users
+  #resources :users
+
+  #nume_controller#functia_rutei
+  get '/users', to: 'users#index', as: 'users'  
+  get '/users/new', to: 'users#new', as: 'new_user'
+  patch '/users/:id/update', to: 'users#update', as: 'update_user'
+  get '/users/:id', to: 'users#show', as: 'user'   
+  post '/users', to: 'users#create'                                
+  delete '/users/:id', to: 'users#destroy'
   
   # Defines the root path route ("/")
   root "home#index"
   
-  get "home#index"
+  get "home/index"
 end

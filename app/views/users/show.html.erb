@@ -1,0 +1,15 @@
+<h1>Edit User</h1>
+
+<%= form_with url: update_user_path(@user), method: :patch do %>
+  <div>
+    Name: <%= text_field_tag :name, @user.name %>
+  </div>
+
+  <div>
+    Email: <%= text_field_tag :email, @user.email %>
+  </div>
+
+  <%= submit_tag "Update" %>
+<% end %>
+
+<%= link_to "Back", users_path %>
