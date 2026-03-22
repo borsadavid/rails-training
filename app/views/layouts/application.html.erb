@@ -6,62 +6,56 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-
+ 
     <style>
-      /* Folosim DOAR nume de culori standard si RGB pentru compatibilitate maxima */
-      
       body {
-        background-color: FloralWhite !important; /* Un crem/alb cald profesional */
+        background-color: #FFFAF0 !important; /* FloralWhite */
         font-family: 'Trebuchet MS', sans-serif !important;
         margin: 0 !important;
         display: flex !important;
         justify-content: center !important;
         min-height: 100vh !important;
       }
-
-      /* Containerul principal - Efect de hartie/lemn */
+ 
       .app-container {
-        background-color: white !important;
-        border-top: 10px solid OrangeRed !important; /* Banda portocalie sus */
-        border-left: 1px solid Wheat !important;
-        border-right: 1px solid Wheat !important;
-        border-bottom: 4px solid SaddleBrown !important; /* Baza maro inchis */
+        background-color: #FFFFFF !important;
+        border-top: 10px solid #FF4500 !important; /* OrangeRed */
+        border-left: 1px solid #F5DEB3 !important; /* Wheat */
+        border-right: 1px solid #F5DEB3 !important; /* Wheat */
+        border-bottom: 4px solid #8B4513 !important; /* SaddleBrown */
         border-radius: 8px !important;
         padding: 50px !important;
         width: 100% !important;
         max-width: 750px !important;
         margin: 50px 20px !important;
-        box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15) !important; /* Umbra maronie */
+        box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15) !important;
       }
-
-      /* Mesajul Notice - Portocaliu Elegant */
+ 
       .flash-notice {
         position: fixed !important;
         top: 25px !important;
         right: 25px !important;
-        background-color: Orange !important;
-        color: white !important;
+        background-color: #FFA500 !important; /* Orange */
+        color: #FFFFFF !important;
         padding: 15px 30px !important;
         border-radius: 4px !important;
         font-weight: bold !important;
         z-index: 10000 !important;
-        box-shadow: 5px 5px 0px SaddleBrown !important; /* Umbra solida maro */
+        box-shadow: 5px 5px 0px #8B4513 !important; /* SaddleBrown */
         animation: slideIn 0.3s ease-out !important;
       }
-
-      /* Titlurile in Maro */
+ 
       h1, h2, h3 {
-        color: SaddleBrown !important;
+        color: #8B4513 !important; /* SaddleBrown */
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
-        border-bottom: 2px dashed Orange !important;
+        border-bottom: 2px dashed #FFA500 !important; /* Orange */
         padding-bottom: 10px !important;
       }
-
-          /* Butonul Stil Chocolate */
+ 
       .btn-chocolate {
-        background-color: Chocolate !important;
-        color: white !important;
+        background-color: #D2691E !important; /* Chocolate */
+        color: #FFFFFF !important;
         padding: 12px 24px !important;
         border-radius: 6px !important;
         text-decoration: none !important;
@@ -71,33 +65,32 @@
         cursor: pointer !important;
         transition: background 0.3s !important;
       }
-
-      /* Link-uri asortate */
+ 
       a {
-        color: Chocolate !important;
+        color: #D2691E !important; /* Chocolate */
         font-weight: bold !important;
         text-decoration: none !important;
       }
-
+ 
       a:hover {
-        color: OrangeRed !important;
+        color: #FF4500 !important; /* OrangeRed */
         text-decoration: underline !important;
       }
-
+ 
       @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
       }
     </style>
   </head>
-
+ 
   <body>
     <% if notice %>
       <div class="flash-notice">
         📙 <%= notice %>
       </div>
     <% end %>
-
+ 
     <div class="app-container">
       <%= yield %>
     </div>
