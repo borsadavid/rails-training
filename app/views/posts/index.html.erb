@@ -1,0 +1,23 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Posts" %>
+
+<h1>Posts</h1>
+
+<div id="posts">
+  <% @posts.each do |post| %>
+    <div style="border: 1px solid #F5DEB3; padding: 20px; margin-bottom: 10px; border-radius: 8px;">
+      <p><strong><%= post.user.name %></strong> a scris:</p>
+      <p><%= post.description %></p>
+      
+      <%= link_to "Vezi", post %>
+      
+      <% if post.user == current_user %>
+        | <%= link_to "Editează", edit_post_path(post) %>
+        | <%= link_to "Șterge", post, data: { turbo_method: :delete, turbo_confirm: "Ești sigur?" } %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<%= link_to "New post", new_post_path %>
