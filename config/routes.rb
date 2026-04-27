@@ -1,18 +1,20 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # 1. Devise trebuie să fie primul pentru a gestiona Login/Register
+  devise_for :users
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # 2. Rutele pentru Postări (Feed, Create, Edit, Delete)
+  resources :posts
+
+  # 3. Rutele pentru vizualizarea listei de Useri și a Profilelor
+  # Folosim 'only' ca să nu se bată în cap cu rutele de Register/Edit de la Devise
+  resources :users, only: [:index, :show]
+
+  # 4. Pagina principală a site-ului (unde ajungi când intri pe localhost:3000)
+  # O setăm pe lista de postări
+  root "posts#index"
+
+  # Rute de mentenanță și sănătate sistem (opționale, le lăsăm aici)
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-
-  resources :users
-  
-  # Defines the root path route ("/")
-  root "home#index"
-  
-  get "home#index"
 end

@@ -1,22 +1,131 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "App" %></title>
+    <title>User Manager | Warm Pro</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  </head>
+ 
+    <style>
+      body {
+        background-color: #FFFAF0 !important; /* FloralWhite */
+        font-family: 'Trebuchet MS', sans-serif !important;
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        min-height: 100vh !important;
+      }
+ 
+      .app-container {
+        background-color: #FFFFFF !important;
+        border-top: 10px solid #FF4500 !important; /* OrangeRed */
+        border-left: 1px solid #F5DEB3 !important; /* Wheat */
+        border-right: 1px solid #F5DEB3 !important; /* Wheat */
+        border-bottom: 4px solid #8B4513 !important; /* SaddleBrown */
+        border-radius: 8px !important;
+        padding: 50px !important;
+        width: 100% !important;
+        max-width: 750px !important;
+        margin: 50px 20px !important;
+        box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15) !important;
+      }
+ 
+      .flash-notice {
+        position: fixed !important;
+        top: 25px !important;
+        right: 25px !important;
+        background-color: #FFA500 !important; /* Orange */
+        color: #FFFFFF !important;
+        padding: 15px 30px !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        z-index: 10000 !important;
+        box-shadow: 5px 5px 0px #8B4513 !important; /* SaddleBrown */
+        animation: slideIn 0.3s ease-out !important;
+      }
+ 
+      h1, h2, h3 {
+        color: #8B4513 !important; /* SaddleBrown */
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        border-bottom: 2px dashed #FFA500 !important; /* Orange */
+        padding-bottom: 10px !important;
+      }
+ 
+      .btn-chocolate {
+        background-color: #D2691E !important; /* Chocolate */
+        color: #FFFFFF !important;
+        padding: 12px 24px !important;
+        border-radius: 6px !important;
+        text-decoration: none !important;
+        display: inline-block !important;
+        font-weight: bold !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: background 0.3s !important;
+      }
+ 
+      a {
+        color: #D2691E !important; /* Chocolate */
+        font-weight: bold !important;
+        text-decoration: none !important;
+      }
+ 
+      a:hover {
+        color: #FF4500 !important; /* OrangeRed */
+        text-decoration: underline !important;
+      }
+ 
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      .user-post-image {
+        border: 4px solid Chocolate !important;
+        box-shadow: 15px 15px 0px Wheat !important; /* Umbra solida stil retro/profesional */
+        border-radius: 10px !important;
+        display: block !important;
+        margin: 20px auto !important;
+        max-width: 100% !important;
+        height: auto !important;
+        transition: transform 0.3s ease !important;
+      }
 
-  <body>
+      .user-post-image:hover {
+        transform: scale(1.02) !important; /* Un mic zoom cand pui mouse-ul */
+      }
+    </style>
+  </head>
+ 
+<body>
+  <% if notice %>
+    <div class="flash-notice">
+      📙 <%= notice %>
+    </div>
+  <% end %>
+
+  <% if alert %>
+    <div class="flash-notice" style="background-color: #FF4500 !important;">
+      ⚠️ <%= alert %>
+    </div>
+  <% end %>
+
+  <div class="app-container">
+    <nav style="margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #F5DEB3;">
+      <% if user_signed_in? %>
+        <span style="color: #8B4513;">👤 <strong><%= current_user.name || current_user.email %></strong></span> 
+        <br><br>
+        <%= link_to "🏠 Feed Postări", posts_path %> | 
+        <%= link_to "➕ Postare Nouă", new_post_path %> | 
+        <%= link_to "🚪 Logout", destroy_user_session_path, data: { turbo_method: :delete }, style: "color: #FF4500;" %>
+      <% else %>
+        <%= link_to "🔑 Login", new_user_session_path %> | 
+        <%= link_to "📝 Sign Up", new_user_registration_path %> 
+      <% end %>
+    </nav>
+
     <%= yield %>
-  </body>
-</html>
+  </div>
+</body>
+</html> 
