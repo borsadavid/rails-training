@@ -81,6 +81,20 @@
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
       }
+      .user-post-image {
+        border: 4px solid Chocolate !important;
+        box-shadow: 15px 15px 0px Wheat !important; /* Umbra solida stil retro/profesional */
+        border-radius: 10px !important;
+        display: block !important;
+        margin: 20px auto !important;
+        max-width: 100% !important;
+        height: auto !important;
+        transition: transform 0.3s ease !important;
+      }
+
+      .user-post-image:hover {
+        transform: scale(1.02) !important; /* Un mic zoom cand pui mouse-ul */
+      }
     </style>
   </head>
  
@@ -107,7 +121,7 @@
         <%= link_to "🚪 Logout", destroy_user_session_path, data: { turbo_method: :delete }, style: "color: #FF4500;" %>
       <% else %>
         <%= link_to "🔑 Login", new_user_session_path %> | 
-        <%= link_to "📝 Sign Up", new_user_registration_path %>
+        <%= link_to "📝 Sign Up", new_user_registration_path %> 
       <% end %>
     </nav>
 

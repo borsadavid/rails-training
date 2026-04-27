@@ -1,8 +1,7 @@
 <%= form_with(model: post) do |form| %>
   <% if post.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
-
+    <div style="color: red; border: 2px solid red; padding: 10px; margin-bottom: 20px;">
+      <h2><%= pluralize(post.errors.count, "eroare") %> au împiedicat salvarea:</h2>
       <ul>
         <% post.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,17 +10,17 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
+  <div style="margin-bottom: 15px;">
+    <%= form.label :description, "Descrierea postării", style: "display: block; color: Chocolate; font-weight: bold; margin-bottom: 5px;" %>
+    <%= form.text_area :description, rows: 4, style: "width: 100%; border: 1px solid Wheat; border-radius: 5px; padding: 10px;" %>
   </div>
 
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.text_area :description %>
+  <div style="margin-bottom: 20px; padding: 15px; border: 2px dashed Wheat; border-radius: 8px; background-color: FloralWhite;">
+    <%= form.label :image, "Alege o imagine pentru feed 📸", style: "display: block; color: Chocolate; font-weight: bold; margin-bottom: 10px;" %>
+    <%= form.file_field :image, accept: 'image/png,image/gif,image/jpeg', class: "input-file" %>
+    <p style="font-size: 12px; color: SaddleBrown; margin-top: 5px;">Formate acceptate: PNG, JPG, GIF</p>
   </div>
-
   <div>
-    <%= form.submit %>
+    <%= form.submit "Postează acum", class: "btn-chocolate", style: "cursor: pointer; padding: 12px 25px; border: none; border-radius: 5px; background-color: Chocolate; color: white; font-weight: bold;" %>
   </div>
 <% end %>
