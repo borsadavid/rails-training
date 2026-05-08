@@ -2,27 +2,63 @@
 
 <% content_for :title, "Posts" %>
 
-<h1>Posts</h1>
+<h1>Feed Postări</h1>
 
 <div id="posts">
   <% @posts.each do |post| %>
-    <div style="border: 1px solid #F5DEB3; padding: 20px; margin-bottom: 10px; border-radius: 8px;">
-      <p><strong><%= post.user.name %></strong> a scris:</p>
+    <div style="border: 1px solid #F5DEB3; padding: 20px; margin-bottom: 20px; border-radius: 8px; background-color: white;">
+      <%# Afișăm numele celui care a postat %>
+      <p><strong><%= post.user.name || post.user.email %></strong> a scris:</p>
       <p><%= post.description %></p>
 
       <% if post.image.attached? %>
         <div style="text-align: center; margin: 15px 0;">
-          <%= image_tag post.image, class: "user-post-image" %>
+          <%= image_tag post.image, class: "user-post-image", style: "max-width: 100%; border-radius: 4px;" %>
         </div>
       <% end %>
-      <%= link_to "Vezi", post %>
+
+      <div style="margin-top: 20px; padding: 15px; background: #fff8f0; border-radius: 8px;">
+        <p><strong>Comentarii:</strong></p>
+        
+        <div id="comments_post_<%= post.id %>">
+          <% post.comments.each do |comment| %>
+            <% if comment.persisted? %> 
+              <p style="font-size: 0.9em; border-bottom: 1px solid #eee; margin-bottom: 5px; padding-bottom: 5px;">
+                <%# Afișăm numele celui care comentează %>
+                <strong style="color: #8B4513;"><%= comment.user.name || "Utilizator" %>:</strong> 
+                <%= comment.content %>
+              </p>
+            <% end %>
+          <% end %>
+        </div>
       
-      <% if post.user == current_user %>
-        | <%= link_to "Editează", edit_post_path(post) %>
-        | <%= link_to "Șterge", post, data: { turbo_method: :delete, turbo_confirm: "Ești sigur?" } %>
-      <% end %>
-    </div>
+        <% if user_signed_in? %>
+          <%= form_with(model: [ post, post.comments.build ], local: true, style: "margin-top: 10px;") do |f| %>
+            <div style="display: flex; gap: 10px;">
+              <%= f.text_field :content, placeholder: "Adaugă un comentariu...", style: "flex: 1; border-radius: 4px; border: 1px solid #ccc; padding: 5px;" %>
+              <%= f.submit "Trimite", style: "background: #8B4513; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer;" %>
+            </div>
+          <% end %>
+        <% else %>
+          <p style="font-size: 0.8em; color: #666; margin-top: 10px;">
+            <%= link_to "Loghează-te", new_user_session_path %> pentru a lăsa un comentariu.
+          </p>
+        <% end %>
+      </div>
+
+      <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+        <%= link_to "Vezi Detalii", post %> 
+        
+        <%# Doar proprietarul postării vede butoanele de Edit/Delete %> 
+        <% if user_signed_in? && post.user == current_user %>
+          | <%= link_to "Editează", edit_post_path(post) %>
+          | <%= link_to "Șterge", post, data: { turbo_method: :delete, turbo_confirm: "Ești sigur?" }, style: "color: red;" %>
+        <% end %>
+      </div>
+    </div> 
   <% end %>
 </div>
 
-<%= link_to "New post", new_post_path, class: "btn-chocolate" %>
+<div style="margin-top: 20px;">
+  <%= link_to "➕ Creează Postare Nouă", new_post_path, class: "btn-chocolate" %>
+</div>
