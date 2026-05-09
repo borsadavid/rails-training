@@ -17,6 +17,34 @@
         </div>
       <% end %>
 
+
+
+  <%= turbo_frame_tag "like_post_#{post.id}" do %>
+    <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px;">
+      <% if user_signed_in? %>
+        <% like = post.likes.find_by(user: current_user) %>
+        
+        <% if like %>
+          <%# Buton UNLIKE %>
+          <%= button_to post_like_path(post), method: :delete, style: "background: none; border: none; cursor: pointer; font-size: 1.5em; padding: 0;" do %>
+            ❤️
+          <% end %>
+        <% else %>
+          <%# Buton LIKE %>
+          <%= button_to post_like_path(post), method: :post, style: "background: none; border: none; cursor: pointer; font-size: 1.5em; padding: 0;" do %>
+            🤍
+          <% end %>
+        <% end %>
+      <% else %>
+        <span style="font-size: 1.5em;">🤍</span>
+      <% end %>
+
+      <strong style="color: #555;">
+        <%= post.likes.count %> <%= post.likes.count == 1 ? 'Apreciere' : 'Aprecieri' %>
+      </strong>
+    </div>
+  <% end %>
+
       <div style="margin-top: 20px; padding: 15px; background: #fff8f0; border-radius: 8px;">
         <p><strong>Comentarii:</strong></p>
         
@@ -60,5 +88,11 @@
 </div>
 
 <div style="margin-top: 20px;">
-  <%= link_to "➕ Creează Postare Nouă", new_post_path, class: "btn-chocolate" %>
+  <% if user_signed_in? %>
+    <%= link_to "➕ Creează Postare Nouă", new_post_path, class: "btn-chocolate" %>
+  <% else %>
+    <div style="padding: 15px; background: #eee; border-radius: 8px; text-align: center;">
+      <%= link_to "Loghează-te", new_user_session_path %> sau <%= link_to "Înregistrează-te", new_user_registration_path %> pentru a posta.
+    </div>
+  <% end %>
 </div>

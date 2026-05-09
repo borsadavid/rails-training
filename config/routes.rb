@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   resources :posts do
     resources :comments, only: [:create]
+    resource :like, only: [:create, :destroy] # Resource singular pentru like, deoarece un utilizator poate avea doar un like per postare
   end
 
   root "posts#index"
