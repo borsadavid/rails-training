@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>User Manager | Warm Pro</title>
+    <title><%= content_for?(:title) ? yield(:title) : "RailsSocial" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
- 
+    <%= javascript_importmap_tags %>
+
     <style>
       body {
         background-color: #FFFAF0 !important; /* FloralWhite */
@@ -16,7 +18,7 @@
         justify-content: center !important;
         min-height: 100vh !important;
       }
- 
+
       .app-container {
         background-color: #FFFFFF !important;
         border-top: 10px solid #FF4500 !important; /* OrangeRed */
@@ -30,12 +32,12 @@
         margin: 50px 20px !important;
         box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15) !important;
       }
- 
-      .flash-notice {
+
+      /* Stil comun pentru notificari si alerte */
+      .flash-notice, .flash-alert {
         position: fixed !important;
         top: 25px !important;
         right: 25px !important;
-        background-color: #FFA500 !important; /* Orange */
         color: #FFFFFF !important;
         padding: 15px 30px !important;
         border-radius: 4px !important;
@@ -44,7 +46,15 @@
         box-shadow: 5px 5px 0px #8B4513 !important; /* SaddleBrown */
         animation: slideIn 0.3s ease-out !important;
       }
- 
+
+      .flash-notice {
+        background-color: #FFA500 !important; /* Orange (Succes) */
+      }
+      
+      .flash-alert {
+        background-color: #FF4500 !important; /* OrangeRed (Eroare) */
+      }
+
       h1, h2, h3 {
         color: #8B4513 !important; /* SaddleBrown */
         text-transform: uppercase !important;
@@ -52,7 +62,7 @@
         border-bottom: 2px dashed #FFA500 !important; /* Orange */
         padding-bottom: 10px !important;
       }
- 
+
       .btn-chocolate {
         background-color: #D2691E !important; /* Chocolate */
         color: #FFFFFF !important;
@@ -65,22 +75,23 @@
         cursor: pointer !important;
         transition: background 0.3s !important;
       }
- 
+
       a {
         color: #D2691E !important; /* Chocolate */
         font-weight: bold !important;
         text-decoration: none !important;
       }
- 
+
       a:hover {
-        color: #FF4500 !important; /* OrangeRed */
+        color: #FF4500 !important; 
         text-decoration: underline !important;
       }
- 
+
       @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
       }
+
       .user-post-image {
         border: 4px solid Chocolate !important;
         box-shadow: 15px 15px 0px Wheat !important; /* Umbra solida stil retro/profesional */
@@ -96,73 +107,64 @@
         transform: scale(1.02) !important; /* Un mic zoom cand pui mouse-ul */
       }
     </style>
-        <script>
-  document.addEventListener("turbo:load", function() {
-    const flash = document.querySelector('.flash-notice');
-    if (flash) {
-      setTimeout(() => {
-        flash.style.transition = "opacity 1s ease";
-        flash.style.opacity = "0";
-        setTimeout(() => { 
-          flash.remove(); 
-        }, 1000);
-      }, 3000);
-    }
-  });
 
+    <script>
+      function setupFlashMessages() {
+        const flashes = document.querySelectorAll('.flash-notice, .flash-alert');
+        flashes.forEach(flash => {
+          setTimeout(() => {
+            flash.style.transition = "opacity 1s ease";
+            flash.style.opacity = "0";
+            setTimeout(() => { 
+              flash.remove(); 
+            }, 1000);
+          }, 3000);
+        });
+      }
 
-  document.addEventListener("DOMContentLoaded", function() {
-    const flash = document.querySelector('.flash-notice');
-    if (flash) {
-      setTimeout(() => {
-        flash.style.transition = "opacity 1s ease";
-        flash.style.opacity = "0";
-        setTimeout(() => { 
-          flash.remove(); 
-        }, 1000);
-      }, 3000);
-    }
-  });
-</script>
-
-    
-
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-
+      document.addEventListener("turbo:load", setupFlashMessages);
+      document.addEventListener("DOMContentLoaded", setupFlashMessages);
+    </script>
   </head>
- 
-<body>
+  
+  <body>
     <% if notice %>
-      <p class="flash-notice" style="color: green; background: #e6fffa; padding: 10px; border: 1px solid #38a169; border-radius: 5px; position: fixed; top: 20px; right: 20px; z-index: 9999;">
-        <%= notice %>
-      </p>
+      <p class="flash-notice"><%= notice %></p>
     <% end %>
 
     <% if alert %>
-      <p class="flash-notice" style="color: red; background: #fff5f5; padding: 10px; border: 1px solid #e53e3e; border-radius: 5px; position: fixed; top: 20px; right: 20px; z-index: 9999;">
-        <%= alert %>
-      </p>
+      <p class="flash-alert"><%= alert %></p>
     <% end %>
 
-  <div class="app-container">
-    <nav style="margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #F5DEB3;">
+    <div class="app-container">
+    <nav style="margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #F5DEB3; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
       <% if user_signed_in? %>
-        <span style="color: #8B4513;">👤 <strong><%= current_user.name || current_user.email %></strong></span> 
-        <br><br>
-        <%= link_to "🏠 Feed Postări", posts_path %> | 
-        <%= link_to "➕ Postare Nouă", new_post_path %> | 
-        <%= link_to "🚪 Logout", destroy_user_session_path, data: { turbo_method: :delete }, style: "color: #FF4500;" %>
+        <%# Partea stângă: Bula cu inițială și Numele %>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="background: #D2691E; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1em; box-shadow: 2px 2px 0px #F5DEB3;">
+            <%= (current_user.name || current_user.email)[0].upcase %>
+          </div>
+          <span style="color: #8B4513;">
+            <strong><%= current_user.name || current_user.email %></strong>
+          </span>
+        </div>
+
+        <%# Partea dreaptă: Link-urile de navigare %>
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <%= link_to "🏠 Feed", posts_path %>
+          <%= link_to "➕ Post", new_post_path %>
+          <%= link_to "🚪 Logout", destroy_user_session_path, data: { turbo_method: :delete }, style: "color: #FF4500; margin-left: 10px;" %>
+        </div>
+
       <% else %>
-        <%= link_to "🔑 Login", new_user_session_path %> | 
-        <%= link_to "📝 Sign Up", new_user_registration_path %> 
+        <div>
+          <%= link_to "🔑 Login", new_user_session_path %> | 
+          <%= link_to "📝 Sign Up", new_user_registration_path %> 
+        </div>
       <% end %>
     </nav>
 
-    <%= yield %>
-  </div>
-</body>
-</html> 
+      <%= yield %>
+    </div>
+  </body>
+</html>
