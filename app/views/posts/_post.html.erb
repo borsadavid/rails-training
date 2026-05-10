@@ -1,12 +1,83 @@
-<div id="<%= dom_id post %>">
-  <p>
-    <strong>User:</strong>
-    <%= post.user_id %>
-  </p>
+<article class="post-card" style="background: white; border: 1px solid #F5DEB3; border-radius: 12px; padding: 25px; box-shadow: 0 4px 10px rgba(139, 69, 19, 0.08); transition: transform 0.2s; margin-bottom: 30px;">
+  
+  <%# 1. Antet postare: Avatar și Nume (ACUM CU LINK) %>
+  <div style="display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f9f0e5; padding-bottom: 15px;">
+    <div style="background: #D2691E; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.3em; margin-right: 15px; box-shadow: 2px 2px 0px #F5DEB3;">
+      <%= (post.user.name || post.user.email)[0].upcase %>
+    </div>
+    <div>
+      <%= link_to user_path(post.user), style: "text-decoration: none; display: block;" do %>
+        <strong style="color: #8B4513; font-size: 1.1em;"><%= post.user.name || post.user.email %></strong>
+      <% end %>
+      <div style="font-size: 0.8em; color: #999; margin-top: 3px;">A postat recent</div>
+    </div>
+  </div>
 
-  <p>
-    <strong>Description:</strong>
-    <%= post.description %>
-  </p>
+  <%# 2. Conținut text %>
+  <div style="font-size: 1.1em; color: #444; line-height: 1.6; margin-bottom: 20px;">
+    <%= simple_format(post.description) %>
+  </div>
 
-</div>
+  <%# 3. Imagine (STILUL TĂU ORIGINAL CU MARGINE ȘI DASHED BORDER) %>
+  <% if post.image.attached? %>
+    <div style="text-align: center; margin: 20px 0; border-radius: 8px; overflow: hidden; background: #FFFAF0; padding: 15px; border: 1px dashed #F5DEB3;">
+      <%= image_tag post.image, class: "user-post-image", style: "max-width: 100%; max-height: 500px; object-fit: cover; border-radius: 6px;" %>
+    </div>
+  <% end %>
+
+  <%# 4. Bara de acțiuni (Like-uri și Link-uri Admin) %>
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid #f9f0e5;">
+    
+    <%= turbo_frame_tag "like_post_#{post.id}" do %>
+      <div style="display: flex; align-items: center; gap: 8px; background: #FFFAF0; padding: 6px 16px; border-radius: 20px; border: 1px solid #F5DEB3;">
+        <% if user_signed_in? %>
+          <% like = post.likes.find_by(user: current_user) %>
+          <%= button_to post_like_path(post), method: (like ? :delete : :post), data: { turbo_frame: "like_post_#{post.id}" }, style: "background: none; border: none; cursor: pointer; font-size: 1.4em; padding: 0; line-height: 1;" do %>
+            <%= like ? '❤️' : '🤍' %>
+          <% end %>
+        <% else %>
+          <span style="font-size: 1.4em; line-height: 1;">🤍</span>
+        <% end %>
+        <strong style="color: #8B4513; font-size: 0.95em;">
+          <%= post.likes.count %> <%= post.likes.count == 1 ? 'Apreciere' : 'Aprecieri' %>
+        </strong>
+      </div>
+    <% end %>
+
+    <div style="font-size: 0.9em; display: flex; gap: 15px;">
+      <%= link_to "👁️ Detalii", post, style: "color: #D2691E;" %>
+      <% if user_signed_in? && post.user == current_user %>
+        <%= link_to "✏️ Editează", edit_post_path(post), style: "color: #8B4513;" %>
+        <%= link_to "🗑️ Șterge", post, data: { turbo_method: :delete, turbo_confirm: "Ești sigur?" }, style: "color: #FF4500;" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 5. Secțiunea de Comentarii (RECUPERATĂ COMPLET) %>
+  <div style="margin-top: 25px; padding: 20px; background: #FFFAF0; border-radius: 8px; border: 1px solid #F5DEB3;">
+    <h4 style="margin: 0 0 15px 0; color: #8B4513; font-size: 1em; border-bottom: 1px solid #F5DEB3; padding-bottom: 5px;">💬 Comentarii (<%= post.comments.count %>)</h4>
+    
+    <div id="comments_post_<%= post.id %>" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+      <% post.comments.each do |comment| %>
+        <% if comment.persisted? %>
+          <%# Redăm fiecare comentariu folosind un alt partial (opțional, dar recomandat) %>
+          <%= render comment %>
+        <% end %>
+      <% end %>
+    </div>
+    <% if !user_signed_in? %>
+      <div style="text-align: center; font-size: 0.9em; color: #8B4513; background: #FFF5EE; padding: 15px; border-radius: 10px; border: 1px solid #F5DEB3; margin-top: 15px;">
+        Want to join the conversation? 
+        <%= link_to "Log in", new_user_session_path, style: "font-weight: bold; color: #D2691E;" %> 
+        to **RailsSocial** to leave a comment!
+      </div>
+    <% end %>
+      
+    <% if user_signed_in? %>
+      <%= form_with(model: [ post, post.comments.build ], local: true, style: "display: flex; gap: 10px;") do |f| %>
+        <%= f.text_field :content, placeholder: "Scrie o părere...", style: "flex: 1; border-radius: 20px; border: 1px solid #F5DEB3; padding: 10px 15px; outline: none;" %>
+        <%= f.submit "Trimite", class: "btn-chocolate", style: "padding: 10px 20px; border-radius: 20px;" %>
+      <% end %>
+    <% end %>
+  </div>
+</article>

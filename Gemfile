@@ -34,6 +34,7 @@ gem "bootsnap", require: false
 
 # Gem-ul pentru redimensionarea pozelor (Active Storage)
 gem "image_processing", "~> 1.2"
+gem "cloudinary"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"

@@ -1,15 +1,34 @@
-<h1>Edit User</h1>
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+  
+  <%# Header Profil %>
+  <div style="background: white; padding: 30px; border-radius: 15px; border: 1px solid #F5DEB3; display: flex; align-items: center; gap: 30px; margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    
+    <%# Avatar %>
+    <div style="background: #D2691E; color: white; width: 120px; height: 120px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5em; font-weight: bold; border: 5px solid #FFFAF0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <%= (@user.name || @user.email)[0].upcase %>
+    </div>
 
-<%= form_with model: @user, url: update_user_path(@user), method: :patch do |f| %>
-  <div>
-    Name: <%= f.text_field :name %>
+    <div>
+      <h1 style="margin: 0; color: #8B4513; border: none;"><%= @user.name || "Utilizator RailsSocial" %></h1>
+      <p style="color: #666; margin: 5px 0;"><%= @user.email %></p>
+      <div style="display: flex; gap: 20px; margin-top: 15px;">
+        <span><strong><%= @posts.count %></strong> postări</span>
+        <span><strong><%= @user.likes.count %></strong> aprecieri date</span>
+      </div>
+    </div>
   </div>
 
-  <div>
-    Email: <%= f.text_field :email %>
+  <%# Feed-ul Utilizatorului %>
+  <h2 style="color: #8B4513; margin-bottom: 20px; border-bottom: 2px solid #F5DEB3; padding-bottom: 10px;">Postări</h2>
+  
+  <div id="user-posts-feed">
+    <% if @posts.any? %>
+      <% @posts.each do |post| %>
+        <%= render post %> <%# Rails va căuta automat partialul _post.html.erb %>
+      <% end %>
+    <% else %>
+      <p style="text-align: center; color: #999; font-style: italic; margin-top: 50px;">Acest utilizator nu a postat nimic încă. 🕸️</p>
+    <% end %>
   </div>
 
-  <%= f.submit "Update" %>
-<% end %>
-
-<%= link_to "Back", users_path %>
+</div>

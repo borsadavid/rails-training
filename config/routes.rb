@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   devise_for :users
-  resources :users
+  resources :users, only: [:show]
 
   resources :posts do
     resources :comments, only: [:create]

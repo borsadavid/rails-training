@@ -151,16 +151,23 @@
 
         <%# Partea dreaptă: Link-urile de navigare %>
         <div style="display: flex; gap: 15px; align-items: center;">
+          <%= link_to "My Profile", user_path(current_user), style: "color: white; margin-right: 250px; text-decoration: none;" %>
           <%= link_to "🏠 Feed", posts_path %>
           <%= link_to "➕ Post", new_post_path %>
           <%= link_to "🚪 Logout", destroy_user_session_path, data: { turbo_method: :delete }, style: "color: #FF4500; margin-left: 10px;" %>
         </div>
 
       <% else %>
-        <div>
-          <%= link_to "🔑 Login", new_user_session_path %> | 
-          <%= link_to "📝 Sign Up", new_user_registration_path %> 
-        </div>
+        <% if !user_signed_in? %>
+          <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #FFF5EE 0%, #FFFAF0 100%); border-radius: 20px; border: 2px dashed #D2691E; margin-bottom: 40px;">
+            <h1 style="color: #8B4513; font-size: 2.5em; margin-bottom: 10px; border: none;">Welcome to <span style="color: #D2691E;">RailsSocial</span>! ☕</h1>
+            <p style="color: #666; font-size: 1.2em;">Where the community comes to life. Explore posts or join us to start sharing!</p>
+            <div style="margin-top: 20px;">
+              <%= link_to "📝 Sign Up", new_user_registration_path, class: "btn-chocolate", style: "padding: 12px 25px; margin-right: 10px;" %>
+              <%= link_to "🔑 Log In", new_user_session_path, style: "color: #8B4513; font-weight: bold; text-decoration: none;" %>
+            </div>
+          </div>
+        <% end %>
       <% end %>
     </nav>
 
