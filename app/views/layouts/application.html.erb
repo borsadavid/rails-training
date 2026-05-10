@@ -1,22 +1,177 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "App" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "RailsSocial" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  </head>
+    <%= javascript_importmap_tags %>
 
+    <style>
+      body {
+        background-color: #FFFAF0 !important; /* FloralWhite */
+        font-family: 'Trebuchet MS', sans-serif !important;
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        min-height: 100vh !important;
+      }
+
+      .app-container {
+        background-color: #FFFFFF !important;
+        border-top: 10px solid #FF4500 !important; /* OrangeRed */
+        border-left: 1px solid #F5DEB3 !important; /* Wheat */
+        border-right: 1px solid #F5DEB3 !important; /* Wheat */
+        border-bottom: 4px solid #8B4513 !important; /* SaddleBrown */
+        border-radius: 8px !important;
+        padding: 50px !important;
+        width: 100% !important;
+        max-width: 750px !important;
+        margin: 50px 20px !important;
+        box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15) !important;
+      }
+
+      /* Stil comun pentru notificari si alerte */
+      .flash-notice, .flash-alert {
+        position: fixed !important;
+        top: 25px !important;
+        right: 25px !important;
+        color: #FFFFFF !important;
+        padding: 15px 30px !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        z-index: 10000 !important;
+        box-shadow: 5px 5px 0px #8B4513 !important; /* SaddleBrown */
+        animation: slideIn 0.3s ease-out !important;
+      }
+
+      .flash-notice {
+        background-color: #FFA500 !important; /* Orange (Succes) */
+      }
+      
+      .flash-alert {
+        background-color: #FF4500 !important; /* OrangeRed (Eroare) */
+      }
+
+      h1, h2, h3 {
+        color: #8B4513 !important; /* SaddleBrown */
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        border-bottom: 2px dashed #FFA500 !important; /* Orange */
+        padding-bottom: 10px !important;
+      }
+
+      .btn-chocolate {
+        background-color: #D2691E !important; /* Chocolate */
+        color: #FFFFFF !important;
+        padding: 12px 24px !important;
+        border-radius: 6px !important;
+        text-decoration: none !important;
+        display: inline-block !important;
+        font-weight: bold !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: background 0.3s !important;
+      }
+
+      a {
+        color: #D2691E !important; /* Chocolate */
+        font-weight: bold !important;
+        text-decoration: none !important;
+      }
+
+      a:hover {
+        color: #FF4500 !important; 
+        text-decoration: underline !important;
+      }
+
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+
+      .user-post-image {
+        border: 4px solid Chocolate !important;
+        box-shadow: 15px 15px 0px Wheat !important; /* Umbra solida stil retro/profesional */
+        border-radius: 10px !important;
+        display: block !important;
+        margin: 20px auto !important;
+        max-width: 100% !important;
+        height: auto !important;
+        transition: transform 0.3s ease !important;
+      }
+
+      .user-post-image:hover {
+        transform: scale(1.02) !important; /* Un mic zoom cand pui mouse-ul */
+      }
+    </style>
+
+    <script>
+      function setupFlashMessages() {
+        const flashes = document.querySelectorAll('.flash-notice, .flash-alert');
+        flashes.forEach(flash => {
+          setTimeout(() => {
+            flash.style.transition = "opacity 1s ease";
+            flash.style.opacity = "0";
+            setTimeout(() => { 
+              flash.remove(); 
+            }, 1000);
+          }, 3000);
+        });
+      }
+
+      document.addEventListener("turbo:load", setupFlashMessages);
+      document.addEventListener("DOMContentLoaded", setupFlashMessages);
+    </script>
+  </head>
+  
   <body>
-    <%= yield %>
+    <% if notice %>
+      <p class="flash-notice"><%= notice %></p>
+    <% end %>
+
+    <% if alert %>
+      <p class="flash-alert"><%= alert %></p>
+    <% end %>
+
+    <div class="app-container">
+    <nav style="margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #F5DEB3; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+      <% if user_signed_in? %>
+        <%# Partea stângă: Bula cu inițială și Numele %>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="background: #D2691E; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1em; box-shadow: 2px 2px 0px #F5DEB3;">
+            <%= (current_user.name || current_user.email)[0].upcase %>
+          </div>
+          <span style="color: #8B4513;">
+            <strong><%= current_user.name || current_user.email %></strong>
+          </span>
+        </div>
+
+        <%# Partea dreaptă: Link-urile de navigare %>
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <%= link_to "My Profile", user_path(current_user), style: "color: white; margin-right: 250px; text-decoration: none;" %>
+          <%= link_to "🏠 Feed", posts_path %>
+          <%= link_to "➕ Post", new_post_path %>
+          <%= link_to "🚪 Logout", destroy_user_session_path, data: { turbo_method: :delete }, style: "color: #FF4500; margin-left: 10px;" %>
+        </div>
+
+      <% else %>
+        <% if !user_signed_in? %>
+          <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #FFF5EE 0%, #FFFAF0 100%); border-radius: 20px; border: 2px dashed #D2691E; margin-bottom: 40px;">
+            <h1 style="color: #8B4513; font-size: 2.5em; margin-bottom: 10px; border: none;">Welcome to <span style="color: #D2691E;">RailsSocial</span>! ☕</h1>
+            <p style="color: #666; font-size: 1.2em;">Where the community comes to life. Explore posts or join us to start sharing!</p>
+            <div style="margin-top: 20px;">
+              <%= link_to "📝 Sign Up", new_user_registration_path, class: "btn-chocolate", style: "padding: 12px 25px; margin-right: 10px;" %>
+              <%= link_to "🔑 Log In", new_user_session_path, style: "color: #8B4513; font-weight: bold; text-decoration: none;" %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </nav>
+
+      <%= yield %>
+    </div>
   </body>
 </html>
