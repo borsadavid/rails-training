@@ -1,0 +1,4 @@
+<%= form_with(model: [ post, comment ], id: "new_comment_form_#{post.id}", style: "display: flex; gap: 10px;") do |f| %>
+  <%= f.text_field :content, placeholder: "Scrie o părere...", style: "flex: 1; border-radius: 20px; border: 1px solid #F5DEB3; padding: 10px 15px; outline: none;" %>
+  <%= f.submit "Trimite", class: "btn-chocolate", style: "padding: 10px 20px; border-radius: 20px;" %>
+<% end %>

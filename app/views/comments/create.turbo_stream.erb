@@ -1,0 +1,15 @@
+<%# 1. Adaugă noul comentariu în listă fără refresh %>
+<%= turbo_stream.append "comments_post_#{@post.id}" do %>
+  <div style="background: white; padding: 12px 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+    <strong style="color: #D2691E; font-size: 0.9em;"><%= @comment.user.name || @comment.user.email %></strong> 
+    <p style="margin: 5px 0 0 0; color: #333; font-size: 0.95em;"><%= @comment.content %></p>
+  </div>
+<% end %>
+
+<%# 2. Golește căsuța de text (input-ul) după ce s-a trimis comentariul %>
+<%= turbo_stream.replace "comment_form_#{@post.id}" do %>
+  <%= form_with(model: [ @post, @post.comments.build ], id: "comment_form_#{@post.id}", local: false, style: "display: flex; gap: 10px;") do |f| %>
+    <%= f.text_field :content, placeholder: "Scrie o părere...", style: "flex: 1; border-radius: 20px; border: 1px solid #F5DEB3; padding: 10px 15px; outline: none;" %>
+    <%= f.submit "Trimite", class: "btn-chocolate", style: "padding: 10px 20px; border-radius: 20px;" %>
+  <% end %>
+<% end %>
