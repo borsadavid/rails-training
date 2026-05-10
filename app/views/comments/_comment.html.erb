@@ -1,4 +1,14 @@
 <div id="<%= dom_id(comment) %>" style="background: white; padding: 12px 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
   <strong style="color: #D2691E; font-size: 0.9em;"><%= comment.user.name || comment.user.email %></strong> 
-  <p style="margin: 5px 0 0 0; color: #333; font-size: 0.95em;"><%= comment.content %></p>
+  
+  <div style="margin-top: 5px;">
+    <%# Verificăm dacă conținutul este un link de Giphy %>
+    <% if comment.content.include?("giphy.com") %>
+      <img src="<%= comment.content %>" 
+           alt="GIF" 
+           style="max-width: 100%; border-radius: 8px; display: block; margin-top: 5px; max-height: 250px;">
+    <% else %>
+      <p style="margin: 0; color: #333; font-size: 0.95em;"><%= comment.content %></p>
+    <% end %>
+  </div>
 </div>

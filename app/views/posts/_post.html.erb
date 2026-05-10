@@ -72,12 +72,128 @@
         to **RailsSocial** to leave a comment!
       </div>
     <% end %>
+
+    
       
     <% if user_signed_in? %>
-      <%= form_with(model: [ post, post.comments.build ], local: true, style: "display: flex; gap: 10px;") do |f| %>
+      <%= form_with(model: [ post, post.comments.build ], id: "comment_form_#{post.id}", local: true, style: "display: flex; gap: 10px;") do |f| %>
         <%= f.text_field :content, placeholder: "Scrie o părere...", style: "flex: 1; border-radius: 20px; border: 1px solid #F5DEB3; padding: 10px 15px; outline: none;" %>
         <%= f.submit "Trimite", class: "btn-chocolate", style: "padding: 10px 20px; border-radius: 20px;" %>
+              <div class="gif-integration mt-2">
+          <button type="button" 
+                  onclick="toggleGifSearch(<%= post.id %>)" 
+                  class="btn btn-sm btn-outline-secondary">
+            Add GIF
+          </button>
+
+          <div id="gif-search-container-<%= post.id %>" style="display: none;" class="mt-2 card p-2">
+            <input type="text" 
+                  placeholder="Search for a GIF..." 
+                  class="form-control mb-2"
+                  oninput="searchGiphy(this.value, <%= post.id %>)">
+            
+            <div id="gif-results-<%= post.id %>" class="d-flex flex-wrap gap-1" style="max-height: 200px; overflow-y: auto;">
+              </div>
+          </div>
+        </div>
+
+        <script>
+          function toggleGifSearch(postId) {
+            const el = document.getElementById(`gif-search-container-${postId}`);
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+          }
+
+          async function searchGiphy(query, postId) {
+            if (query.length < 2) return;
+            const apiKey = "U5t8na5x5mNr33cPljmyB457tN0ectyf";
+            const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=6`;
+            
+            const response = await fetch(url);
+            const { data } = await response.json();
+            
+            const container = document.getElementById(`gif-results-${postId}`);
+            container.innerHTML = data.map(gif => `
+              <img src="${gif.images.fixed_height_small.url}" 
+                  style="cursor:pointer; height: 80px; border-radius: 4px;" 
+                  onclick="selectGif('${gif.images.fixed_height.url}', ${postId})">
+            `).join('');
+          }
+
+          function selectGif(gifUrl, postId) {
+            // Găsim formularul de comentariu pentru postarea respectivă
+            // Verifică dacă id-ul formularului tău este corect (standard Rails este #new_comment)
+            const form = document.querySelector(`#post_${postId}_comments_form`) || document.querySelector(`#new_comment`);
+            const input = document.getElementById(`comment_content_${postId}`) || document.querySelector(`input[name="comment[content]"]`);
+            
+            if (input) {
+              input.value = gifUrl;
+              // Trimitem formularul automat (Turbo va face restul)
+              input.form.requestSubmit();
+              toggleGifSearch(postId);
+            }
+          }
+        </script>
       <% end %>
     <% end %>
   </div>
 </article>
+
+<script>
+  window.toggleGifSearch = function(postId) {
+    const container = document.getElementById(`gif-search-container-${postId}`);
+    if (container) {
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+  }
+
+  window.searchGiphy = async function(query, postId) {
+    if (query.length < 2) return;
+    
+    const apiKey = "U5t8na5x5mNr33cPljmyB457tN0ectyf";
+    const resultsContainer = document.getElementById(`gif-results-${postId}`);
+    
+    if (!resultsContainer) return;
+
+    try {
+      const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=9`);
+      const { data } = await response.json();
+      
+      resultsContainer.innerHTML = data.map(gif => `
+        <div style="width: 100%; height: 100px; background: #f4f4f4; border-radius: 4px; overflow: hidden; cursor: pointer;"
+             onclick="window.selectGif('${gif.images.fixed_height.url}', ${postId})">
+          <img src="${gif.images.fixed_height_small.url}" 
+               style="width: 100%; height: 100px; object-fit: contain; display: block;" 
+               alt="GIF Result">
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error("Giphy Error:", err);
+    }
+  }
+
+  // Am făcut funcția mai robustă
+  window.selectGif = function(gifUrl, postId) {
+    console.log("Selecting GIF:", gifUrl, "for Post:", postId); // Debug in consola F12
+
+    // Încercăm să găsim input-ul și formularul prin mai multe metode
+    const input = document.getElementById(`comment_input_${postId}`) || 
+                  document.querySelector(`#comment_form_${postId} input[name="comment[content]"]`);
+    
+    const form = document.getElementById(`comment_form_${postId}`) || 
+                 (input ? input.form : null);
+    
+    if (input && form) {
+      input.value = gifUrl; // Injectăm URL-ul
+      
+      // Folosim setTimeOut mic pentru a ne asigura că valoarea s-a procesat
+      setTimeout(() => {
+        form.requestSubmit(); // Trimitem automat (Turbo)
+        window.toggleGifSearch(postId); // Închidem căutarea
+        input.value = ''; // Curățăm input-ul pentru data viitoare
+      }, 100);
+    } else {
+      console.error("Nu am găsit formularul sau input-ul de comentariu!");
+      alert("Eroare la selectarea GIF-ului. Verifică consola.");
+    }
+  }
+</script>

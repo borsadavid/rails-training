@@ -23,6 +23,8 @@ services:
       - db
     environment:
       DATABASE_URL: postgres://rails_user:password@db:5432/myapp_development
+      GIPHY_API_KEY: U5t8na5x5mNr33cPljmyB457tN0ectyf
+      SECRET_KEY_BASE: 8e5f2a1b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f
 
 volumes:
   db_data:
